@@ -1,5 +1,7 @@
 package users;
 
+import java.util.Objects;
+
 /**
  * @author Nikolai Shilenko
  *
@@ -9,8 +11,11 @@ package users;
  * Для заданного класса User переопределите конструкторы и методы
  * clone(), equls() и hashCode() в соответствии с указаниями, заданными в
  * комментариях к этим методам:
+ * Класс представляет пользователя системы.
  */
+
 public class User {
+	
 	/** Уникальный идентификатор пользователя. */
 	
 	 private int id;
@@ -19,29 +24,40 @@ public class User {
 	 
 	 private String name;
 	 
-	 /** Определяет является ли данный пользователь
-	администратором системы.*/
+	 /** Определяет является ли данный пользователь администратором системы.*/
 	 
 	 private boolean isAdmin;
 	 
 	 /** Конструктор по умолчанию. */
-	 public User() { }
 	 
-	 /** Конструктор, определяющий все поля класса.
-	 * @param id уникальный идентификатор пользователя.
-	 * @param name имя пользователя.
-	 * @param isAdmin задаёт значение true, если
-	пользователь
-	* является администратором системы.
-	 * @throws UserException выбрасывается в случаях, когда:
-	* - идентификатор пользователя не уникален;
-	* - имя пользователя равно null или является пустым.
-	* (Класс данного исключения определите самостоятельно).
-	*/
+	 public User() {
+	 }
 	 
-	public User(int id, String name, boolean isAdmin)
-	 throws UserException {
-	 // Реализация конструктора ...
+	 /** 
+	  * Конструктор, определяющий все поля класса.
+	  * @param id уникальный идентификатор пользователя.
+	  * @param name имя пользователя.
+	  * @param isAdmin задаёт значение true, если пользователь
+	  * является администратором системы.
+	  * @throws UserException выбрасывается в случаях, когда:
+	  * - идентификатор пользователя не уникален;
+	  * - имя пользователя равно null или является пустым.
+	  * (Класс данного исключения определите самостоятельно).
+	  */
+	 
+	public User(int id, String name, boolean isAdmin) throws UserException {
+		this.id = id;
+		if(idIsNotUnique(0)) 
+			/* в пареметры метода idIsNotUnique() подаётся 0 для имитации работы конструктора, 
+			но в реальной задаче нужно получать значение id из какого-либо хранилища*/
+		{
+			throw new UserException("User's id is not unique");
+		}
+		this.name = name;
+		if(nameIsNotValid()) {
+			throw new UserException("User's name is not valid");
+		}
+		this.isAdmin = isAdmin;
 	}
 	
 	/**
@@ -57,9 +73,18 @@ public class User {
 	* пустой строкой.
 	*/
 	
-	@Override
+	@Override 
 	protected Object clone() throws CloneNotSupportedException {
-	// Реализация метода ...
+		User clone = new User();
+		clone.id = (int) (Math.random() * 1001);
+		clone.name = this.name;
+		clone.isAdmin = this.isAdmin;
+		if(clone.nameIsNotValid()) {
+			throw new CloneNotSupportedException();
+		} else if(clone.idIsNotUnique((int) (Math.random() * 1001))) {
+			clone.id = clone.id * 1001;
+		}
+		return (User) clone;	
 	}
 	
 	/**
@@ -73,19 +98,47 @@ public class User {
 	
 	@Override
 	public boolean equals(Object obj) {
-	 // Реализация метода...
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof User)) {
+			return false;
+		}
+		User other = (User) obj;
+		return isAdmin == other.isAdmin && Objects.equals(name, other.name);
 	}
-	
+
 	/**
-	* Метод возвращает хэш-код данного объекта. Алгоритм
+	 * Метод возвращает хэш-код данного объекта. Алгоритм
 	 * вычисления кода должен учитывать имя пользователя и
 	 * значение поля isAdmin.
 	 * @return хэш-код объекта.
 	 */
 	
-	 @Override
-	 public int hashCode() {
-	 // Реализация метода...
+	@Override
+	public int hashCode() {
+		return Objects.hash(isAdmin, name);
+	}
+	 
+	/** Метод проверяет идентификатор пользователя на не уникальность.
+	 *  @param otherId должен принимать значение из хранилища
+	 *  всех идентификаторов (массива, списка, таблицы базы данных и пр.), существующих пользователей 
+	 *  и сравнивается со значением id текущего объекта.
+	 *  @return true если значения равны (то есть id - не уникален).
+	 */
+	 
+	 protected boolean idIsNotUnique(int otherId) {
+		 return id == otherId;
 	 }
 
+	/** Метод проверяет имя пользователя на невалидность.
+	 *  Если имя содержит null или является пустым (не содержит символов или содержит только пробелы),
+	 *  то оно считается невалидным.
+	 *  @return true, если name содержит null или пустую строку.
+	 */
+	 
+	 protected boolean nameIsNotValid() {
+		 return name == null || name.trim().isEmpty();
+	 }
+	 
 }
