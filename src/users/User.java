@@ -76,15 +76,19 @@ public class User {
 	@Override 
 	protected Object clone() throws CloneNotSupportedException {
 		User clone = new User();
-		clone.id = (int) (Math.random() * 1001);
-		clone.name = this.name;
-		clone.isAdmin = this.isAdmin;
-		if(clone.nameIsNotValid()) {
-			throw new CloneNotSupportedException();
-		} else if(clone.idIsNotUnique((int) (Math.random() * 1001))) {
-			clone.id = clone.id * 1001;
+		try {
+			clone = new User(/*(int) (Math.random() * 1001)*/ 0, this.name, this.isAdmin);
+			return clone;
+		} catch(UserException e) {
+			if(clone.nameIsNotValid()) {
+				throw new CloneNotSupportedException();
+			} else {
+				while (clone.idIsNotUnique(0)) {
+					clone.setId((int) (Math.random() * 1001));
+				}
+			}
 		}
-		return (User) clone;	
+		return clone;
 	}
 	
 	/**
@@ -140,5 +144,54 @@ public class User {
 	 protected boolean nameIsNotValid() {
 		 return name == null || name.trim().isEmpty();
 	 }
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", name=" + name + ", isAdmin=" + isAdmin + "]";
+	}
+
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * @return the isAdmin
+	 */
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	/**
+	 * @param isAdmin the isAdmin to set
+	 */
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+	 
+	 
 	 
 }
