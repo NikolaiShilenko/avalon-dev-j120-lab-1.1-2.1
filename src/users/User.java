@@ -46,18 +46,17 @@ public class User {
 	  */
 	 
 	public User(int id, String name, boolean isAdmin) throws UserException {
-		this.id = id;
-		if(idIsNotUnique(0)) 
-			/* в пареметры метода idIsNotUnique() подаётся 0 для имитации работы конструктора, 
-			но в реальной задаче нужно получать значение id из какого-либо хранилища*/
-		{
+		if(UsersStorage.hasUserId(id)) {
 			throw new UserException("User's id is not unique");
 		}
-		this.name = name;
-		if(nameIsNotValid()) {
-			throw new UserException("User's name is not valid");
+		if(UsersStorage.nameIsNotValid(name)) {
+			throw new UserException("User's name is null or empty");
 		}
+		this.id = id;
+		this.name = name;
 		this.isAdmin = isAdmin;
+		UsersStorage.users[UsersStorage.userCounter] = this;
+		UsersStorage.userCounter++;
 	}
 	
 	/**
@@ -76,18 +75,18 @@ public class User {
 	@Override 
 	protected Object clone() throws CloneNotSupportedException {
 		User clone = new User();
-		try {
-			clone = new User(/*(int) (Math.random() * 1001)*/ 0, this.name, this.isAdmin);
-			return clone;
-		} catch(UserException e) {
-			if(clone.nameIsNotValid()) {
-				throw new CloneNotSupportedException();
-			} else {
-				while (clone.idIsNotUnique(0)) {
-					clone.setId((int) (Math.random() * 1001));
-				}
-			}
+		if (UsersStorage.nameIsNotValid(this.name)) {
+			throw new CloneNotSupportedException("User's name is null or empty");
 		}
+		clone.setName(this.name);
+		int cloneId;
+		do {
+			cloneId = (int) (Math.random() * 1001);
+		} while(!UsersStorage.hasUserId(id));
+		clone.setId(cloneId);
+		clone.setAdmin(this.isAdmin);
+		UsersStorage.users[UsersStorage.userCounter] = clone;
+		UsersStorage.userCounter++;
 		return clone;
 	}
 	
@@ -123,75 +122,34 @@ public class User {
 	public int hashCode() {
 		return Objects.hash(isAdmin, name);
 	}
-	 
-	/** Метод проверяет идентификатор пользователя на не уникальность.
-	 *  @param otherId должен принимать значение из хранилища
-	 *  всех идентификаторов (массива, списка, таблицы базы данных и пр.), существующих пользователей 
-	 *  и сравнивается со значением id текущего объекта.
-	 *  @return true если значения равны (то есть id - не уникален).
-	 */
-	 
-	 protected boolean idIsNotUnique(int otherId) {
-		 return id == otherId;
-	 }
-
-	/** Метод проверяет имя пользователя на невалидность.
-	 *  Если имя содержит null или является пустым (не содержит символов или содержит только пробелы),
-	 *  то оно считается невалидным.
-	 *  @return true, если name содержит null или пустую строку.
-	 */
-	 
-	 protected boolean nameIsNotValid() {
-		 return name == null || name.trim().isEmpty();
-	 }
 
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", name=" + name + ", isAdmin=" + isAdmin + "]";
 	}
 
-	/**
-	 * @return the id
-	 */
 	public int getId() {
 		return id;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(int id) {
 		this.id = id;
 	}
 
-	/**
-	 * @return the name
-	 */
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @param name the name to set
-	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	/**
-	 * @return the isAdmin
-	 */
 	public boolean isAdmin() {
 		return isAdmin;
 	}
 
-	/**
-	 * @param isAdmin the isAdmin to set
-	 */
 	public void setAdmin(boolean isAdmin) {
 		this.isAdmin = isAdmin;
 	}
-	 
-	 
 	 
 }

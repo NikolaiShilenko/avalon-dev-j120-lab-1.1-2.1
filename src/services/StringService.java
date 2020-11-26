@@ -37,8 +37,11 @@ public class StringService {
 	 */
 
 	public static String[] sort(String[] as, boolean dir) throws StringArrayException {
-		if (as == null || as.length == 0) {
-			throw new StringArrayException("Array reference is null or array is empty");
+		if (as == null) {
+			throw new StringArrayException("Array reference is null");
+		}
+		if (as.length == 0) {
+			throw new StringArrayException("Array is empty");
 		}
 		if (dir) {
 			Arrays.sort(as, c1);
@@ -59,10 +62,14 @@ public class StringService {
 	 */
 
 	public static char[] getCharStat(String str) {
+		if(str == null)
+			return null;
+		if(str.isEmpty())
+			return new char[0];
 		String modifiedStr = "";
 		for (int i = 0; i < str.length(); i++) {
-			if (!modifiedStr.contains(modifiedStr.charAt(i) + ""))
-				modifiedStr += modifiedStr.charAt(i);
+			if (!modifiedStr.contains(str.charAt(i) + ""))
+				modifiedStr += str.charAt(i);
 		}
 		return modifiedStr.toCharArray();
 	}
