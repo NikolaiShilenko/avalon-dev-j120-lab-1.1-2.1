@@ -61,17 +61,23 @@ public class StringService {
 	 * пуста, то возвращается пустой массив.
 	 */
 
+	/*
+	 * public static char[] getCharStat(String str) { if(str == null) return null;
+	 * if(str.isEmpty()) return new char[0]; String modifiedStr = ""; for (int i =
+	 * 0; i < str.length(); i++) { if (!modifiedStr.contains(str.charAt(i) + ""))
+	 * modifiedStr += str.charAt(i); } return modifiedStr.toCharArray(); }
+	 */
 	public static char[] getCharStat(String str) {
 		if(str == null)
 			return null;
 		if(str.isEmpty())
 			return new char[0];
-		String modifiedStr = "";
+		StringBuilder modifiedStr = new StringBuilder(0);
 		for (int i = 0; i < str.length(); i++) {
-			if (!modifiedStr.contains(str.charAt(i) + ""))
-				modifiedStr += str.charAt(i);
+			if (modifiedStr.indexOf(str.substring(i, i + 1)) == -1)
+				modifiedStr.append(str.charAt(i));
 		}
-		return modifiedStr.toCharArray();
+		return modifiedStr.toString().toCharArray();
 	}
 
 }

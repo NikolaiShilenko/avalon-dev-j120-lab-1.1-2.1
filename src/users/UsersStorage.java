@@ -17,7 +17,7 @@ public class UsersStorage {
 	 */
 	
 	static boolean hasUserId(int id) {
-		for (int i = 0; i < users.length; i++) {
+		for (int i = 0; i < userCounter; i++) {
 			if(users[i] != null && users[i].getId() == id) {
 				return true;
 			}
